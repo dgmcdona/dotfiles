@@ -1,0 +1,108 @@
+autoload -U compinit; compinit
+
+#=============================================================#
+#====================== PATHS ================================#
+#=============================================================#
+
+# RUST
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# CUSTOM_BIN
+export PATH="$HOME/bin:$PATH"
+
+# PYTHON
+export PATH=$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/Applications/Wireshark.app/Contents/MacOS:/Users/davidmcdonald/chromedriver:/usr/local/sbin:/usr/local/sbin
+export PATH="/usr/local/opt/python@3.8/bin:$PATH"
+export PATH="$HOME/Library/Python/3.8/bin:$PATH"
+
+# GOLANG
+export PATH="$HOME/go/bin:$PATH"
+export GOPATH=~/go/
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+#=============================================================#
+#=================== SSH Tunnels =============================#
+#=============================================================#
+if [ -f "$HOME/.config/zsh/tunnel.zsh" ]; then
+	source "$HOME/.config/zsh/tunnel.zsh"
+fi
+
+#=============================================================#
+#=================== TMUX ====================================#
+#=============================================================#
+
+# tmux aliases
+alias tls='tmux list-sessions'
+alias tn='tmux new-session -s'
+alias ta='tmux a -t'
+alias tkill='tmux kill-session -t'
+alias tkall='tmux kill-server'
+
+#=============================================================#
+#==================== FZF ====================================#
+#=============================================================#
+
+export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+export FZF_DEFAULT_COMMAND="fd . $HOME --hidden"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd -t d . $HOME"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+fpath+=${ZDOTDIR:-~}/.zsh_functions
+
+#=============================================================#
+#===================== SHELL =================================#
+#=============================================================#
+HISTSIZE=10000
+SAVEHIST=20000
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_ignore_space
+alias history="history 0"
+# TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S\ncpu\t%P'
+
+export MANPAGER='nvim +Man!'
+
+alias nf="neofetch --source ~/.neofetch/marathon.txt"
+alias ec="$EDITOR $HOME/.zshrc"
+alias sc="source $HOME/.zshrc"
+alias ev="$EDITOR $HOME/.config/nvim/init.vim"
+
+# Replace cat and ls with bat and lsd
+alias cat='bat'
+alias ls='exa'
+alias vim='nvim'
+alias la='exa -l -a --git'
+alias cm='chezmoi'
+
+# Edit TeX file
+alias tex='nvim $(fd *.tex .)'
+
+# Fix slow pasting due to zsh-autosuggestions
+zstyle ':bracketed-paste-magic' active-widgets '.self-*'
+
+export ZSH="/Users/davidmcdonald/.oh-my-zsh"
+export EDITOR='/usr/local/bin/nvim'
+
+# Uncomment the following line to enable command auto-correction.
+ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+# COMPLETION_WAITING_DOTS="true"
+
+# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+plugins=(golang fzf-tab zsh-completions git macos zsh-autosuggestions vi-mode zsh-syntax-highlighting)
+
+DISABLE_AUTO_UPDATE="true"
+source $ZSH/oh-my-zsh.sh
+
+# Compilation flags
+export ARCHFLAGS="-arch x86_64"
+
+eval "$(zoxide init zsh)"
+eval "$(starship init zsh)"
