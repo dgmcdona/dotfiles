@@ -63,36 +63,23 @@ setopt hist_expire_dups_first
 setopt hist_ignore_dups
 setopt hist_ignore_space
 alias history="history 0"
-# TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S\ncpu\t%P'
 
 export MANPAGER='nvim +Man!'
 
 alias nf="neofetch --source ~/.neofetch/marathon.txt"
-alias ec="$EDITOR $HOME/.zshrc"
 alias sc="source $HOME/.zshrc"
-alias ev="$EDITOR $HOME/.config/nvim/init.vim"
-
-# Replace cat and ls with bat and lsd
-alias cat='bat'
-alias ls='exa'
-alias vim='nvim'
-alias la='exa -l -a --git'
-alias cm='chezmoi'
-
-# Edit TeX file
-alias tex='nvim $(fd *.tex .)'
 
 # Fix slow pasting due to zsh-autosuggestions
 zstyle ':bracketed-paste-magic' active-widgets '.self-*'
 
 export ZSH="/Users/davidmcdonald/.oh-my-zsh"
-export EDITOR='/usr/local/bin/nvim'
+export EDITOR=nvim
 
 # Uncomment the following line to enable command auto-correction.
 ENABLE_CORRECTION="true"
 
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+# Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
+[ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2- | tr ' ' '\n')" scp sftp ssh;
 
 # Standard plugins can be found in ~/.oh-my-zsh/plugins/*
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
@@ -100,6 +87,13 @@ plugins=(golang fzf-tab zsh-completions git macos zsh-autosuggestions vi-mode zs
 
 DISABLE_AUTO_UPDATE="true"
 source $ZSH/oh-my-zsh.sh
+
+# Replace cat and ls with bat and lsd
+alias cat='bat'
+alias ls='exa'
+alias vim='nvim'
+alias la='exa -l -a --git'
+alias cm='chezmoi'
 
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
