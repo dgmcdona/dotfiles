@@ -118,11 +118,11 @@
                         ]
                     },
                     {
-                        "description": "Right Option Key → Hyper Key (⌃⌥⇧⌘)",
+                        "description": "Tab → Meh Key (⌃⌥⇧) on Press and Hold",
                         "manipulators": [
                             {
                                 "from": {
-                                    "key_code": "right_option",
+                                    "key_code": "tab",
                                     "modifiers": {
                                         "optional": [
                                             "any"
@@ -133,10 +133,14 @@
                                     {
                                         "key_code": "left_shift",
                                         "modifiers": [
-                                            "left_command",
-                                            "left_control",
-                                            "left_option"
+                                            "left_option",
+                                            "left_control"
                                         ]
+                                    }
+                                ],
+                                "to_if_alone": [
+                                    {
+                                        "key_code": "tab"
                                     }
                                 ],
                                 "type": "basic"
