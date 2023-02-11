@@ -22,6 +22,8 @@ source $BREW_PREFIX/opt/antidote/share/antidote/antidote.zsh
 
 # initialize plugins statically with ${ZDOTDIR:-~}/.zsh_plugins.txt
 antidote load
+# initialize completions
+autoload -U compinit; compinit
 
 alias cat="bat"
 alias cm="chezmoi"
