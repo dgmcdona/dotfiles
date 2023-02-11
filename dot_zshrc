@@ -1,3 +1,5 @@
+source <($BREW_PREFIX/bin/starship init zsh --print-full-init)
+
 export PATH="$PATH:/usr/local/go/bin"
 export HISTFILE=~/.zsh_history
 export HISTFILESIZE=1000000000
@@ -17,11 +19,6 @@ function zvm_after_init() {
         [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 }
 
-# source antidote
-source $BREW_PREFIX/opt/antidote/share/antidote/antidote.zsh
-
-# initialize plugins statically with ${ZDOTDIR:-~}/.zsh_plugins.txt
-antidote load
 # initialize completions
 autoload -U compinit; compinit
 
@@ -37,4 +34,9 @@ alias vim='nvim'
 
 
 eval "$(zoxide init zsh)"
-source <($BREW_PREFIX/bin/starship init zsh --print-full-init)
+#
+# source antidote
+source $BREW_PREFIX/opt/antidote/share/antidote/antidote.zsh
+
+# initialize plugins statically with ${ZDOTDIR:-~}/.zsh_plugins.txt
+antidote load
