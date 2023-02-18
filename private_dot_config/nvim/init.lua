@@ -306,6 +306,10 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
+-- moving between buffers
+vim.keymap.set('n', '<leader>l', function() vim.api.nvim_command("bnext") end)
+vim.keymap.set('n', '<leader>h', function() vim.api.nvim_command("bprevious") end)
+
 -- Trouble.nvim
 vim.keymap.set('n', '<leader>tt', require('trouble').toggle, { silent = true })
 

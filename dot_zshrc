@@ -1,5 +1,12 @@
+if [[ $(uname -m) == 'arm64'  ]]; then
+          export BREW_PREFIX="/opt/homebrew"
+else
+          export BREW_PREFIX="/usr/local"
+fi
+
 source <($BREW_PREFIX/bin/starship init zsh --print-full-init)
 
+export EDITOR='nvim'
 export PATH="$PATH:/usr/local/go/bin"
 export HISTFILE=~/.zsh_history
 export HISTFILESIZE=1000000000
@@ -8,12 +15,6 @@ export HISTSIZE=1000000000
 setopt INC_APPEND_HISTORY
 export HISTTIMEFORMAT="[%F %T] "
 setopt EXTENDED_HISTORY
-
-if [[ $(uname -m) == 'arm64'  ]]; then
-          export BREW_PREFIX="/opt/homebrew"
-else
-          export BREW_PREFIX="/usr/local"
-fi
 
 function zvm_after_init() {
         [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

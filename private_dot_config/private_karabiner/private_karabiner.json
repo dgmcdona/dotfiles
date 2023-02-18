@@ -118,11 +118,11 @@
                         ]
                     },
                     {
-                        "description": "Tab → Meh Key (⌃⌥⇧) on Press and Hold",
+                        "description": "Right Option → Meh Key (⌃⌥⇧) on Press and Hold",
                         "manipulators": [
                             {
                                 "from": {
-                                    "key_code": "tab",
+                                    "key_code": "right_option",
                                     "modifiers": {
                                         "optional": [
                                             "any"
@@ -140,7 +140,7 @@
                                 ],
                                 "to_if_alone": [
                                     {
-                                        "key_code": "tab"
+                                        "key_code": "right_option"
                                     }
                                 ],
                                 "type": "basic"
