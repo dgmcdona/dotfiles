@@ -16,15 +16,54 @@ setopt INC_APPEND_HISTORY
 export HISTTIMEFORMAT="[%F %T] "
 setopt EXTENDED_HISTORY
 
+source ~/.config/fzf/fzf-git.sh
+
 function zvm_after_init() {
         [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+        zvm_bindkey viins "^P" up-line-or-beginning-search
+        zvm_bindkey viins "^N" down-line-or-beginning-search
+        for o in files branches tags remotes hashes stashes each_ref; do
+        eval "zvm_bindkey viins '^g^${o[1]}' fzf-git-$o-widget"
+        eval "zvm_bindkey viins '^g${o[1]}' fzf-git-$o-widget"
+        done
 }
+
+# Set keybindings for zsh-vi-mode normal and visual modes
+function zvm_after_lazy_keybindings() {
+        for o in files branches tags remotes hashes stashes each_ref; do
+                eval "zvm_bindkey vicmd '^g^${o[1]}' fzf-git-$o-widget"
+                eval "zvm_bindkey vicmd '^g${o[1]}' fzf-git-$o-widget"
+                eval "zvm_bindkey visual '^g^${o[1]}' fzf-git-$o-widget"
+                eval "zvm_bindkey visual '^g${o[1]}' fzf-git-$o-widget"
+        done
+}
+
+# fuzzy git checkout
+gch() {
+        git checkout "$(git branch --all |fzf | tr -d '[:space:]')"
+}
+
+# diff fuzzy file select
+gdf() {
+        git diff -- "$(git status | grep "modified:" | cut -d " " -f 4 | fzf | tr -d '[:space:]')"
+}
+
+gaf() {
+        git add "$(git ls-files -m | fzf | tr -d '[:space:]')"
+}
+
+
+# pyenv setup
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
 
 # initialize completions
 autoload -U compinit; compinit
 
 alias cat="bat"
 alias cm="chezmoi"
+alias fix_clipboard='pbpaste | iconv -t ASCII//TRANSLIT | pbcopy'
 alias l='exa -l'
 alias lt='exa -lT'
 alias ls='exa'
@@ -32,6 +71,11 @@ alias la='exa -la'
 alias tn='tmuxinator'
 alias vi='nvim'
 alias vim='nvim'
+alias gst='git status'
+alias gp='git push'
+alias gpl='git pull'
+alias ga='git add'
+alias gcm='git commit -m'
 
 
 eval "$(zoxide init zsh)"

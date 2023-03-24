@@ -11,7 +11,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.runtimepath:prepend(lazypath)
 
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'sumneko_lua', 'gopls' }
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'lua_ls', 'gopls' }
 
 require('lazy').setup({
   { 'stevearc/dressing.nvim', },
@@ -19,7 +19,7 @@ require('lazy').setup({
   {
     'akinsho/toggleterm.nvim',
     config = function()
-      require('toggleterm').setup{
+      require('toggleterm').setup {
         open_mapping = [[<c-\>]],
         direction = 'float',
         float_opts = {
@@ -36,32 +36,18 @@ require('lazy').setup({
     dependencies = 'nvim-tree/nvim-web-devicons'
   },
 
-  { -- Previewing
+  {
+    -- Previewing
     'rmagatti/goto-preview',
     config = function()
-      require('goto-preview').setup{
+      require('goto-preview').setup {
         default_mappings = true,
       }
     end,
   },
 
-  { -- Faster filetype detection
-    'nathom/filetype.nvim',
-    config = function()
-      require('filetype').setup{
-        overrides = {
-          extensions = {
-            jq = "jq",
-            hcl = "terraform",
-            tf = "terraform",
-            sh = "sh",
-          }
-        }
-      }
-    end
-  },
-
-  { -- LSP Configuration & Plugins
+  {
+    -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
@@ -90,11 +76,33 @@ require('lazy').setup({
     },
   },
 
+  -- Linting
+  {
+    'jose-elias-alvarez/null-ls.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      local null_ls = require('null-ls')
+      null_ls.setup({
+        sources = {
+          null_ls.builtins.diagnostics.golangci_lint,
+          null_ls.builtins.diagnostics.jsonlint,
+          null_ls.builtins.diagnostics.luacheck,
+          null_ls.builtins.formatting.black,
+          null_ls.builtins.formatting.gofumpt,
+          null_ls.builtins.formatting.fixjson
+        }
+      })
+    end
+  },
+
   -- Diagnostics
   {
     'folke/trouble.nvim',
     lazy = true,
     dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = {
+      mode = "document_diagnostics",
+    }
   },
 
   -- Golang
@@ -104,14 +112,15 @@ require('lazy').setup({
     ft = "go",
   },
 
-  { -- Autocompletion
+  {
+    -- Autocompletion
     'hrsh7th/nvim-cmp',
     dependencies = {
       'hrsh7th/cmp-nvim-lsp',
       {
         'L3MON4D3/LuaSnip',
         dependencies = 'rafamadriz/friendly-snippets',
-        config = function ()
+        config = function()
           local snip_path = vim.fn.stdpath("config") .. "/snippets"
           require('luasnip.loaders.from_vscode').lazy_load()
           require('luasnip.loaders.from_vscode').lazy_load({ paths = snip_path })
@@ -121,7 +130,8 @@ require('lazy').setup({
     },
   },
 
-  { -- Highlight, edit, and navigate code
+  {
+    -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = function()
       pcall(require('nvim-treesitter.install').update { with_sync = true })
@@ -154,9 +164,17 @@ require('lazy').setup({
 
   -- Colorschemes
   {
+    'lalitmee/cobalt2.nvim',
+    lazy = true,
+    dependencies = { 'tjdevries/colorbuddy.nvim' },
+    config = function()
+      require('colorbuddy').colorscheme('cobalt2')
+    end
+  },
+  {
     'navarasu/onedark.nvim',
     lazy = true,
-  },-- Gruvbox theme
+  },
   {
     'rebelot/kanagawa.nvim',
     lazy = true,
@@ -164,7 +182,11 @@ require('lazy').setup({
   {
     'ellisonleao/gruvbox.nvim',
     lazy = true,
-  }, -- Gruvbox theme
+  },
+  {
+    'catppuccin/nvim',
+    lazy = true,
+  },
 
   {
     'nvim-lualine/lualine.nvim', -- Fancier statusline
@@ -181,7 +203,7 @@ require('lazy').setup({
         })
       end
       vim.opt.runtimepath:prepend(lazypath)
-      require('lualine').setup{
+      require('lualine').setup {
         options = { theme = "codedark" }
       }
     end
@@ -213,13 +235,15 @@ require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
 
-  { -- File Picker
+  {
+    -- File Picker
     'luukvbaal/nnn.nvim',
     config = true,
     lazy = true,
   },
 
-  { -- Fuzzy Finder (files, lsp, etc)
+  {
+    -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
     dependencies = { 'nvim-lua/plenary.nvim' },
@@ -244,7 +268,8 @@ require('lazy').setup({
   {
     'nvim-telescope/telescope-fzf-native.nvim',
     build = 'make',
-    cond = vim.fn.executable 'make' == 1 },
+    cond = vim.fn.executable 'make' == 1
+  },
 })
 
 -- [[ Setting options ]]
@@ -286,7 +311,7 @@ vim.wo.signcolumn = 'yes'
 -- Set colorscheme
 vim.o.termguicolors = true
 
-vim.cmd.colorscheme("onedark")
+vim.cmd.colorscheme("cobalt2")
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
@@ -301,6 +326,8 @@ vim.g.maplocalleader = ','
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+vim.keymap.set('n', 'n', 'nzz', { noremap = true })
+vim.keymap.set('n', 'N', 'Nzz', { noremap = true })
 
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -309,6 +336,19 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 -- moving between buffers
 vim.keymap.set('n', '<leader>l', function() vim.api.nvim_command("bnext") end)
 vim.keymap.set('n', '<leader>h', function() vim.api.nvim_command("bprevious") end)
+
+-- formatting
+vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format() end)
+vim.api.nvim_create_autocmd(
+  "BufWritePre",
+  { callback = function() vim.lsp.buf.format() end }
+)
+
+-- restore cursor position
+vim.api.nvim_create_autocmd(
+  "BufReadPost",
+  { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
+)
 
 -- Trouble.nvim
 vim.keymap.set('n', '<leader>tt', require('trouble').toggle, { silent = true })
@@ -333,15 +373,15 @@ local format_sync_grp = vim.api.nvim_create_augroup("GoImport", {})
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*.go",
   callback = function()
-   require('go.format').goimport()
+    require('go.format').goimport()
   end,
   group = format_sync_grp,
 })
 
 -- Save cursor position
 vim.api.nvim_create_autocmd(
-	"BufReadPost",
-	{ command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
+  "BufReadPost",
+  { command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g`\"" | endif]] }
 )
 
 -- Remove trailing whitespace on save
@@ -370,6 +410,7 @@ vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { de
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sq', require('telescope.builtin').quickfix, { desc = '[S]earch [Q]uickfix' })
+
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -492,7 +533,7 @@ end
 local lspconfig = require('lspconfig')
 
 
-require'lspconfig'.jqls.setup{}
+require 'lspconfig'.jqls.setup {}
 
 -- nvim-cmp supports additional completion capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -512,7 +553,7 @@ local runtime_path = vim.split(package.path, ';')
 table.insert(runtime_path, 'lua/?.lua')
 table.insert(runtime_path, 'lua/?/init.lua')
 
-lspconfig.sumneko_lua.setup {
+lspconfig.lua_ls.setup {
   on_attach = on_attach,
   capabilities = capabilities,
   settings = {
