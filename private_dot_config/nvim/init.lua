@@ -108,6 +108,7 @@ require('lazy').setup({
   -- Golang
   {
     'ray-x/go.nvim',
+    dependencies = { 'ray-x/guihua.lua' },
     config = true,
     ft = "go",
   },
@@ -339,10 +340,10 @@ vim.keymap.set('n', '<leader>h', function() vim.api.nvim_command("bprevious") en
 
 -- formatting
 vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format() end)
-vim.api.nvim_create_autocmd(
-  "BufWritePre",
-  { callback = function() vim.lsp.buf.format() end }
-)
+-- vim.api.nvim_create_autocmd(
+--   "BufWritePre",
+--   { callback = function() vim.lsp.buf.format() end }
+-- )
 
 -- restore cursor position
 vim.api.nvim_create_autocmd(

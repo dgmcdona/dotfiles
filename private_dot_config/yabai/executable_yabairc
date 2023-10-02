@@ -18,3 +18,5 @@ yabai -m config window_gap     5
 yabai -m rule --add app="^System Preferences$" manage=off
 yabai -m rule --add app="^VMWare Fusion$" manage=off
 yabai -m rule --add app="^volcano-viewer$" manage=off
+yabai -m rule --add app="^Stats$" manage=off
+yabai -m rule --add app="^Ghidra$" manage=off

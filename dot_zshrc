@@ -7,7 +7,7 @@ fi
 source <($BREW_PREFIX/bin/starship init zsh --print-full-init)
 
 export EDITOR='nvim'
-export PATH="$PATH:/usr/local/go/bin"
+export PATH="$PATH:$HOME/go/bin"
 export HISTFILE=~/.zsh_history
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000000
@@ -16,27 +16,8 @@ setopt INC_APPEND_HISTORY
 export HISTTIMEFORMAT="[%F %T] "
 setopt EXTENDED_HISTORY
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source ~/.config/fzf/fzf-git.sh
-
-function zvm_after_init() {
-        [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-        zvm_bindkey viins "^P" up-line-or-beginning-search
-        zvm_bindkey viins "^N" down-line-or-beginning-search
-        for o in files branches tags remotes hashes stashes each_ref; do
-        eval "zvm_bindkey viins '^g^${o[1]}' fzf-git-$o-widget"
-        eval "zvm_bindkey viins '^g${o[1]}' fzf-git-$o-widget"
-        done
-}
-
-# Set keybindings for zsh-vi-mode normal and visual modes
-function zvm_after_lazy_keybindings() {
-        for o in files branches tags remotes hashes stashes each_ref; do
-                eval "zvm_bindkey vicmd '^g^${o[1]}' fzf-git-$o-widget"
-                eval "zvm_bindkey vicmd '^g${o[1]}' fzf-git-$o-widget"
-                eval "zvm_bindkey visual '^g^${o[1]}' fzf-git-$o-widget"
-                eval "zvm_bindkey visual '^g${o[1]}' fzf-git-$o-widget"
-        done
-}
 
 # fuzzy git checkout
 gch() {
