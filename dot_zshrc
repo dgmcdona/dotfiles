@@ -7,7 +7,9 @@ fi
 source <($BREW_PREFIX/bin/starship init zsh --print-full-init)
 
 export EDITOR='nvim'
+export PATH="$PATH:/usr/local/go/bin"
 export PATH="$PATH:$HOME/go/bin"
+export PATH="$PATH:$HOME/bin"
 export HISTFILE=~/.zsh_history
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000000
@@ -17,22 +19,8 @@ export HISTTIMEFORMAT="[%F %T] "
 setopt EXTENDED_HISTORY
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.local_funcs.sh ] && source ~/.local_funcs.sh
 source ~/.config/fzf/fzf-git.sh
-
-# fuzzy git checkout
-gch() {
-        git checkout "$(git branch --all |fzf | tr -d '[:space:]')"
-}
-
-# diff fuzzy file select
-gdf() {
-        git diff -- "$(git status | grep "modified:" | cut -d " " -f 4 | fzf | tr -d '[:space:]')"
-}
-
-gaf() {
-        git add "$(git ls-files -m | fzf | tr -d '[:space:]')"
-}
-
 
 # pyenv setup
 export PYENV_ROOT="$HOME/.pyenv"
@@ -42,9 +30,11 @@ eval "$(pyenv init -)"
 # initialize completions
 autoload -U compinit; compinit
 
-alias cat="bat"
+alias axbrew='arch -x86_64 /usr/local/homebrew/bin/brew'
+alias cat="bat --theme OneHalfDark"
 alias cm="chezmoi"
 alias fix_clipboard='pbpaste | iconv -t ASCII//TRANSLIT | pbcopy'
+alias lg='lazygit'
 alias l='exa -l'
 alias lt='exa -lT'
 alias ls='exa'
@@ -53,10 +43,14 @@ alias tn='tmuxinator'
 alias vi='nvim'
 alias vim='nvim'
 alias gst='git status'
+alias gd='git diff'
+alias gdt='git difftool'
 alias gp='git push'
 alias gpl='git pull'
 alias ga='git add'
 alias gcm='git commit -m'
+alias r2='rizin'
+alias bat='bat --theme TwoDark'
 
 
 eval "$(zoxide init zsh)"
@@ -66,3 +60,4 @@ source $BREW_PREFIX/opt/antidote/share/antidote/antidote.zsh
 
 # initialize plugins statically with ${ZDOTDIR:-~}/.zsh_plugins.txt
 antidote load
+export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
