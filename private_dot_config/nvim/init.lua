@@ -1,3 +1,11 @@
+-- [[ Basic Keymaps ]]
+-- Set <,> as the leader key
+-- See `:help mapleader`
+--  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
+vim.g.mapleader = ','
+vim.g.maplocalleader = ','
+
+-- luacheck: globals vim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -11,9 +19,27 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.runtimepath:prepend(lazypath)
 
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'lua_ls', 'gopls' }
+local servers = { 'bashls', 'terraformls', 'clangd', 'rust_analyzer', 'ruff_lsp', 'tsserver', 'lua_ls', 'gopls',
+  'pyright' }
 
 require('lazy').setup({
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+  },
+  {
+    'chipsenkbeil/distant.nvim',
+    branch = 'v0.3',
+    config = function()
+      require('distant'):setup()
+    end
+  },
+  {
+    "folke/neodev.nvim",
+    opts = {}
+  },
   { 'stevearc/dressing.nvim', },
 
   {
@@ -52,6 +78,14 @@ require('lazy').setup({
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
       {
+        'notjedi/nvim-rooter.lua',
+        config = function()
+          require('nvim-rooter').setup {
+            rooter_patterns = { 'pyrightconfig.json' }
+          }
+        end
+      },
+      {
         'williamboman/mason.nvim',
         config = true,
         lazy = true,
@@ -72,6 +106,7 @@ require('lazy').setup({
       {
         'j-hui/fidget.nvim',
         config = true,
+        tag = 'legacy',
       },
     },
   },
@@ -88,8 +123,11 @@ require('lazy').setup({
           null_ls.builtins.diagnostics.jsonlint,
           null_ls.builtins.diagnostics.luacheck,
           null_ls.builtins.formatting.black,
+          null_ls.builtins.formatting.isort,
           null_ls.builtins.formatting.gofumpt,
-          null_ls.builtins.formatting.fixjson
+          null_ls.builtins.formatting.fixjson,
+          null_ls.builtins.formatting.sql_formatter,
+          null_ls.builtins.formatting.rustfmt
         }
       })
     end
@@ -174,6 +212,12 @@ require('lazy').setup({
   {
     'navarasu/onedark.nvim',
     lazy = true,
+    config = function()
+      require('onedark').setup {
+        style = 'cool'
+      }
+      require('onedark').load()
+    end
   },
   {
     'rebelot/kanagawa.nvim',
@@ -204,7 +248,7 @@ require('lazy').setup({
       end
       vim.opt.runtimepath:prepend(lazypath)
       require('lualine').setup {
-        options = { theme = "codedark" }
+        options = { theme = "tokyonight" }
       }
     end
   },
@@ -246,7 +290,10 @@ require('lazy').setup({
     -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    dependencies = { 
+      'nvim-lua/plenary.nvim' ,
+      "debugloop/telescope-undo.nvim",
+    },
     lazy = true,
     config = function()
       lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -261,6 +308,15 @@ require('lazy').setup({
         })
       end
       vim.opt.runtimepath:prepend(lazypath)
+      require("telescope").setup({
+        extensions = {
+          undo = {
+            -- telescope-undo.nvim config, see below
+          },
+        },
+      })
+      require("telescope").load_extension("undo")
+      vim.keymap.set("n", "<leader>u", "<cmd>Telescope undo<cr>")
     end,
   },
 
@@ -281,10 +337,12 @@ vim.o.relativenumber = true
 -- Visual Block virtualedit
 vim.o.virtualedit = "block"
 
-vim.o.colorcolumn = 80
+vim.o.colorcolumn = "100"
 
 -- Set highlight on search
 vim.o.hlsearch = true
+-- clear search highlights
+vim.keymap.set('n', '<leader>/', function() vim.cmd([[nohls]]) end)
 
 vim.o.expandtab = true
 
@@ -311,7 +369,8 @@ vim.wo.signcolumn = 'yes'
 -- Set colorscheme
 vim.o.termguicolors = true
 
-vim.cmd.colorscheme("cobalt2")
+-- vim.o.background = "light"
+vim.cmd.colorscheme("tokyonight-moon")
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
@@ -338,11 +397,18 @@ vim.keymap.set('n', '<leader>l', function() vim.api.nvim_command("bnext") end)
 vim.keymap.set('n', '<leader>h', function() vim.api.nvim_command("bprevious") end)
 
 -- formatting
-vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format() end)
-vim.api.nvim_create_autocmd(
-  "BufWritePre",
-  { callback = function() vim.lsp.buf.format() end }
-)
+local format_doc = function()
+  vim.lsp.buf.format()
+  vim.cmd([[%s/\s\+$//e]])
+end
+
+vim.keymap.set({ 'n', 'v' }, '<leader>z', 'zA', { noremap = true })
+
+vim.keymap.set({ 'n', 'v' }, '<leader>f', format_doc)
+-- vim.api.nvim_create_autocmd(
+--   "BufWritePre",
+--   { callback = format_doc }
+-- )
 
 -- restore cursor position
 vim.api.nvim_create_autocmd(
@@ -385,18 +451,19 @@ vim.api.nvim_create_autocmd(
 )
 
 -- Remove trailing whitespace on save
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  pattern = { "*" },
-  command = [[%s/\s\+$//e]],
-})
+-- vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+--   pattern = { "*" },
+--   command = [[%s/\s\+$//e]],
+-- })
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
+
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
+vim.keymap.set('n', '<leader>b', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
@@ -404,10 +471,13 @@ vim.keymap.set('n', '<leader>/', function()
   })
 end, { desc = '[/] Fuzzily search in current buffer]' })
 
+local function grep_func()
+  require('telescope.builtin').live_grep({ additional_args = { "-j1" } })
+end
 vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>sg', grep_func, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sq', require('telescope.builtin').quickfix, { desc = '[S]earch [Q]uickfix' })
 
@@ -498,6 +568,7 @@ local on_attach = function(_, bufnr)
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
 
+
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
@@ -531,19 +602,38 @@ local on_attach = function(_, bufnr)
 end
 
 local lspconfig = require('lspconfig')
-
-
-require 'lspconfig'.jqls.setup {}
-
+lspconfig.jqls.setup {}
 -- nvim-cmp supports additional completion capabilities
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-  }
+  if (lsp == "pyright")
+  then
+    lspconfig[lsp].setup {
+      root_dir = lspconfig.util.root_pattern('pyrightconfig.json'),
+      on_attach = on_attach,
+      settings = {
+        pyright = {
+          autoImportCompletion = true,
+        },
+        python = {
+          analysis = {
+            autoImportCompletions = true,
+            autoSearchPaths = true,
+            diagnosticMode = 'workspace',
+            useLibraryCodeForTypes = true,
+            typeCheckingMode = 'on'
+          }
+        }
+      }
+    }
+  else
+    lspconfig[lsp].setup {
+      on_attach = on_attach,
+      capabilities = capabilities,
+    }
+  end
 end
 
 -- Example custom configuration for lua
@@ -558,16 +648,16 @@ lspconfig.lua_ls.setup {
   capabilities = capabilities,
   settings = {
     Lua = {
+      diagnostics = {
+        globals = { 'vim' },
+      },
       runtime = {
         -- Tell the language server which version of Lua you're using (most likely LuaJIT)
         version = 'LuaJIT',
         -- Setup your lua path
         path = runtime_path,
       },
-      diagnostics = {
-        globals = { 'vim' },
-      },
-      workspace = { library = vim.api.nvim_get_runtime_file('', true) },
+      workspace = { library = vim.api.nvim_get_runtime_file('', true), checkThirdParty = false },
       -- Do not send telemetry data containing a randomized but unique identifier
       telemetry = { enable = false },
     },
@@ -587,6 +677,7 @@ cmp.setup {
   mapping = cmp.mapping.preset.insert {
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-e>'] = cmp.mapping.abort(),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
