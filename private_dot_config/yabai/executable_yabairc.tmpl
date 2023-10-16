@@ -1,0 +1,38 @@
+#!/bin/sh
+# for this to work you must configure sudo such that
+# it will be able to run the command without password
+
+if [ {{ .host | quote }} = "home" ]; then
+  yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+  sudo yabai --load-sa
+
+  yabai -m space 1 --label browser
+  yabai -m space 3 --label term
+  yabai -m space 2 --label comms
+
+  yabai -m rule --add app="^Messages$" space=^comms
+  yabai -m rule --add app="^Discord$" space=^comms
+  yabai -m rule --add app="^Firefox Developer Edition$" space=^browser
+  yabai -m rule --add app="^kitty$" space=^term
+fi
+
+if [ {{ .host | quote }} = "work" ]; then
+  yabai -m rule --add app="^volcano-viewer$" manage=off
+fi
+
+
+
+# GLOBAL
+yabai -m config layout bsp
+# Set all padding and gaps to 10pt (default: 0)
+yabai -m config top_padding    5
+yabai -m config bottom_padding 5
+yabai -m config left_padding   5
+yabai -m config right_padding  5
+yabai -m config window_gap     5
+
+yabai -m rule --add app="^Stats$" manage=off
+yabai -m rule --add app="^System Preferences$" manage=off
+yabai -m rule --add app="^VMWare Fusion$" manage=off
+yabai -m rule --add app="^Ghidra$" manage=off
+
