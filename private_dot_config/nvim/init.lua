@@ -296,7 +296,7 @@ vim.keymap.set('n', '<leader>su', require('telescope').extensions.undo.undo, { d
 vim.keymap.set('n', '<leader>tg', require('telescope').extensions.lazygit.lazygit, { desc = '[T]oggle [G]it repos' })
 
 -- LazyGit mappings
-vim.keymap.set('n', '<leader>gg', require('telescope').extensions.lazygit.lazygit, { desc = '[G]o to [G]it' })
+vim.keymap.set('n', '<leader>gg', function() vim.cmd([[:LazyGit]]) end, { desc = '[G]o to [G]it' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
