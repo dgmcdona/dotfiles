@@ -401,10 +401,12 @@ local servers = {
   pyright = require('river_rat.extras.lang_servers.pyright'),
   rust_analyzer = {},
   lua_ls = {
-    Lua = {
-      workspace = { checkThirdParty = false },
-      telemetry = { enable = false },
-    },
+    settings = {
+      Lua = {
+        workspace = { checkThirdParty = false },
+        telemetry = { enable = false },
+      },
+    }
   },
 }
 
@@ -424,12 +426,16 @@ mason_lspconfig.setup {
 
 mason_lspconfig.setup_handlers {
   function(server_name)
-    require('lspconfig')[server_name].setup {
+    local args = {
       capabilities = capabilities,
       on_attach = on_attach,
-      settings = servers[server_name],
+      settings = (servers[server_name] or {}).settings,
       filetypes = (servers[server_name] or {}).filetypes,
     }
+    if (servers[server_name] or {}).root_dir then
+      args["root_dir"] = servers[server_name].root_dir
+    end
+    require('lspconfig')[server_name].setup(args)
   end,
 }
 

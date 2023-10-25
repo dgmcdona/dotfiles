@@ -14,13 +14,11 @@ export HISTFILE=~/.zsh_history
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000000
 
+bindkey -v
 setopt INC_APPEND_HISTORY
 export HISTTIMEFORMAT="[%F %T] "
 setopt EXTENDED_HISTORY
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f ~/.local_funcs.sh ] && source ~/.local_funcs.sh
-source ~/.config/fzf/fzf-git.sh
 
 # pyenv setup
 export PYENV_ROOT="$HOME/.pyenv"
@@ -61,4 +59,11 @@ source $BREW_PREFIX/opt/antidote/share/antidote/antidote.zsh
 # initialize plugins statically with ${ZDOTDIR:-~}/.zsh_plugins.txt
 antidote load
 export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
-bindkey -v
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.local_funcs.sh ] && source ~/.local_funcs.sh
+[ -f ~/.local_variables.sh ] && source ~/.local_variables.sh
+source ~/.config/fzf/fzf-git.sh
+if ! [ -z "$(\ls -A ~/.local/share/zsh)" ]; then
+	source ~/.local/share/zsh/*
+fi
