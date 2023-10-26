@@ -398,6 +398,7 @@ require('mason-lspconfig').setup()
 local servers = {
   clangd = {},
   gopls = {},
+  bashls = {},
   pyright = require('river_rat.extras.lang_servers.pyright'),
   rust_analyzer = {},
   lua_ls = {
