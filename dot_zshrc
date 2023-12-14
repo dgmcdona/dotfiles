@@ -49,6 +49,9 @@ alias ga='git add'
 alias gcm='git commit -m'
 alias r2='rizin'
 alias bat='bat --theme TwoDark'
+alias gcd='cd $(ghq root)/$(ghq list | fzf)'
+alias cme='chezmoi edit $(chezmoi list -p absolute| fzf)'
+alias cmew='chezmoi edit --watch $(chezmoi list -p absolute| fzf)'
 
 
 eval "$(zoxide init zsh)"

@@ -7,11 +7,12 @@ if [ {{ .host | quote }} = "home" ]; then
   sudo yabai --load-sa
 
   yabai -m space 1 --label browser
-  yabai -m space 3 --label term
   yabai -m space 2 --label comms
+  yabai -m space 3 --label term
 
   yabai -m rule --add app="^Messages$" space=^comms
   yabai -m rule --add app="^Discord$" space=^comms
+  yabai -m rule --add app="^Mail$" space=^comms
   yabai -m rule --add app="^Firefox Developer Edition$" space=^browser
   yabai -m rule --add app="^kitty$" space=^term
 fi
@@ -25,10 +26,10 @@ fi
 # GLOBAL
 yabai -m config layout bsp
 # Set all padding and gaps to 10pt (default: 0)
-yabai -m config top_padding    5
-yabai -m config bottom_padding 5
-yabai -m config left_padding   5
-yabai -m config right_padding  5
+yabai -m config top_padding    20
+yabai -m config bottom_padding 20
+yabai -m config left_padding   20
+yabai -m config right_padding  20
 yabai -m config window_gap     5
 
 yabai -m rule --add app="^Stats$" manage=off
