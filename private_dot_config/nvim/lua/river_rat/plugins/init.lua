@@ -62,6 +62,8 @@ return {
       );
     end
   },
+  -- UI enhancements
+  { "stevearc/dressing.nvim" },
 
   -- formatting
   {
@@ -102,5 +104,34 @@ return {
       -- If you want the formatexpr, here is the place to set it
       vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
     end,
-  }
+  },
+
+  {
+    -- Previewing
+    "rmagatti/goto-preview",
+    config = function()
+      require("goto-preview").setup({
+        default_mappings = true,
+      })
+    end,
+  },
+  {
+    "akinsho/bufferline.nvim",
+    config = true,
+    --tag = "v3.*",
+    dependencies = "nvim-tree/nvim-web-devicons",
+  },
+
+  {
+    'chipsenkbeil/distant.nvim',
+    branch = 'v0.3',
+    config = function()
+      local ok, servers = pcall(require, 'river_rat.extras.lang_servers.distant')
+      if ok then
+        require('distant'):setup(servers)
+      else
+        require('distant'):setup()
+      end
+    end
+  },
 }
