@@ -6,9 +6,9 @@ return {
         python = {
             analysis = {
                 autoImportCompletions = true,
+                useLibraryCodeForTypes = true,
                 autoSearchPaths = true,
                 diagnosticMode = "workspace",
-                useLibraryCodeForTypes = true,
                 typeCheckingMode = "on",
             },
         },

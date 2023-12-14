@@ -9,12 +9,13 @@ source <($BREW_PREFIX/bin/starship init zsh --print-full-init)
 export EDITOR='nvim'
 export PATH="$PATH:/usr/local/go/bin"
 export PATH="$PATH:$HOME/go/bin"
-export PATH="$PATH:$HOME/bin"
+export PATH="$HOME/bin:$PATH"
 export HISTFILE=~/.zsh_history
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000000
 
 bindkey -v
+setopt auto_cd
 setopt INC_APPEND_HISTORY
 export HISTTIMEFORMAT="[%F %T] "
 setopt EXTENDED_HISTORY
@@ -33,10 +34,10 @@ alias cat="bat --theme OneHalfDark"
 alias cm="chezmoi"
 alias fix_clipboard='pbpaste | iconv -t ASCII//TRANSLIT | pbcopy'
 alias lg='lazygit'
-alias l='exa -l'
-alias lt='exa -lT'
-alias ls='exa'
-alias la='exa -la'
+alias l='eza -l'
+alias lt='eza -lT'
+alias ls='eza'
+alias la='eza -la'
 alias tn='tmuxinator'
 alias vi='nvim'
 alias vim='nvim'
@@ -70,3 +71,4 @@ source ~/.config/fzf/fzf-git.sh
 if ! [ -z "$(\ls -A ~/.local/share/zsh)" ]; then
 	source ~/.local/share/zsh/*
 fi
+eval "$(direnv hook zsh)"
