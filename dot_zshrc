@@ -13,6 +13,7 @@ export PATH="$HOME/bin:$PATH"
 export HISTFILE=~/.zsh_history
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000000
+export MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat -l man -p --theme 1337'"
 
 bindkey -v
 setopt auto_cd
@@ -50,7 +51,7 @@ alias ga='git add'
 alias gcm='git commit -m'
 alias r2='rizin'
 alias bat='bat --theme TwoDark'
-alias gcd='cd $(ghq root)/$(ghq list | fzf)'
+alias gcd='cd $(ghq list -p| fzf --delimiter / --with-nth -3..-1)'
 alias cme='chezmoi edit $(chezmoi list -p absolute| fzf)'
 alias cmew='chezmoi edit --watch $(chezmoi list -p absolute| fzf)'
 alias rc='. ~/.zshrc'
