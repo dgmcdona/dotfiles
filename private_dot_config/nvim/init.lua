@@ -174,6 +174,7 @@ require('lazy').setup({
         end,
       },
       "debugloop/telescope-undo.nvim",
+      "nvim-telescope/telescope-ghq.nvim"
     },
   },
 
@@ -220,6 +221,7 @@ require('telescope').setup {
     }
   },
   extensions = {
+    ghq = {},
     undo = {
       use_delta = true,
       use_custom_command = nil, -- setting this implies `use_delta = false`. Accepted format is: { "bash", "-c", "echo '$DIFF' | delta" }
@@ -261,6 +263,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
 vim.keymap.set('n', '<leader>su', require('telescope').extensions.undo.undo, { desc = '[S]earch [U]ndo' })
 vim.keymap.set('n', '<leader>tg', require('telescope').extensions.lazygit.lazygit, { desc = '[T]oggle [G]it repos' })
+vim.keymap.set('n', '<leader>gr', require('telescope').extensions.ghq.ghq, { desc = '[G]o to [R]epositories' })
 
 -- LazyGit mappings
 vim.keymap.set('n', '<leader>gg', function() vim.cmd([[:LazyGit]]) end, { desc = '[G]o to [G]it' })
