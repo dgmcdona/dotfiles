@@ -20,6 +20,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local theme = os.getenv("COLORTHEME")
 
 -- NOTE: Here is where you install your plugins.
 --  You can configure plugins using the `config` key.
@@ -37,6 +38,14 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
+  -- Restore cursor position on reopen
+  {
+    'ethanholz/nvim-lastplace',
+    config = function()
+      require 'nvim-lastplace'.setup {}
+    end
+  },
+
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
   {
@@ -44,6 +53,7 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
+      'b0o/schemastore.nvim',
       'williamboman/mason.nvim',
       'williamboman/mason-lspconfig.nvim',
 
@@ -73,7 +83,27 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',  opts = {} },
+  { 'folke/which-key.nvim',  
+    event = 'VimEnter', 
+    opts = {
+      spec = {
+        { "<leader>d", group = "[D]ocument" },
+        { "<leader>d_", hidden = true },
+        { "<leader>g", group = "[G]it" },
+        { "<leader>g_", hidden = true },
+        { "<leader>h", group = "More git" },
+        { "<leader>h_", hidden = true },
+        { "<leader>r", group = "[R]ename" },
+        { "<leader>r_", hidden = true },
+        { "<leader>s", group = "[S]earch" },
+        { "<leader>s_", hidden = true },
+        { "<leader>w", group = "[W]orkspace" },
+        { "<leader>w_", hidden = true },
+        { "<leader>c", group = "[C]ode", mode = { "n", "x" } },
+        { "<leader>c_", hidden = true, mode = { "n", "x" } },
+      }
+    } 
+  },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -113,13 +143,21 @@ require('lazy').setup({
     },
   },
 
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000, lazy = true },
+  {
+    "rebelot/kanagawa.nvim",
+    priority = 1000,
+    lazy = true
+  },
   {
     "folke/tokyonight.nvim",
     priority = 1000,
-    config = function()
-      vim.cmd.colorscheme "tokyonight-storm"
-    end
+    lazy = true
   },
+  -- {
+  --   "sainnhe/gruvbox-material",
+  --   priority = 1000,
+  -- },
   -- {
   --   -- Theme inspired by Atom
   --   'navarasu/onedark.nvim',
@@ -136,7 +174,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = (theme == "light" and "gruvbox_light" or "onedark"),
         component_separators = '|',
         section_separators = '',
       },
@@ -189,9 +227,29 @@ require('lazy').setup({
   { import = 'river_rat.plugins' },
 }, {})
 
+if theme == "light"
+then
+  -- vim.cmd.colorscheme "catppuccin-latte"
+  require('tokyonight')
+  vim.o.background = "light"
+  vim.cmd.colorscheme "tokyonight-day"
+elseif theme == "dark"
+then
+  require('tokyonight')
+  vim.o.background = "dark"
+  vim.cmd.colorscheme "tokyonight-storm"
+  -- vim.g.gruvbox_material_enable_italic = true
+  -- vim.g.gruvbox_material_enable_bold = true
+  -- vim.g.gruvbox_material_background = 'hard'
+  -- vim.o.background = "dark"
+else
+  require('kanagawa')
+  vim.cmd.colorscheme "kanagawa"
+end
+
 require('river_rat.options')
 require('river_rat.keymaps')
-require('river_rat.extras.treesitter')
+-- require('river_rat.extras.treesitter')
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -217,7 +275,7 @@ require('telescope').setup {
       },
     },
     path_display = {
-      "shorten"
+      "truncate"
     }
   },
   extensions = {
@@ -226,7 +284,7 @@ require('telescope').setup {
       use_delta = true,
       use_custom_command = nil, -- setting this implies `use_delta = false`. Accepted format is: { "bash", "-c", "echo '$DIFF' | delta" }
       side_by_side = false,
-      diff_context_lines = vim.o.scrolloff,
+      -- diff_context_lines = vim.o.scrolloff,
       entry_format = "state #$ID, $STAT, $TIME",
       time_format = "",
       mappings = {
@@ -374,7 +432,7 @@ local on_attach = function(_, bufnr)
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+  nmap('<C-s>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -391,17 +449,6 @@ local on_attach = function(_, bufnr)
 end
 
 require('river_rat.filetypes')
-
--- document existing key chains
-require('which-key').register {
-  ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-  ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-  ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
-  ['<leader>h'] = { name = 'More git', _ = 'which_key_ignore' },
-  ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-  ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-  ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-}
 
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
@@ -423,7 +470,31 @@ local servers = {
   taplo = {},
   sqlls = {},
   pyright = require('river_rat.extras.lang_servers.pyright'),
-  rust_analyzer = {},
+  rust_analyzer = {
+    settings = {
+      cargo = {
+        allFeatures = true,
+        loadOutDirsFromCheck = true,
+        runBuildScripts = true,
+      },
+      -- Add clippy lints for Rust.
+      checkOnSave = {
+        allFeatures = true,
+        command = "clippy",
+        extraArgs = {
+          "--",
+          "--no-deps",
+          "-Dclippy::correctness",
+          "-Dclippy::complexity",
+          "-Wclippy::perf",
+          "-Wclippy::pedantic",
+        },
+      },
+      procMacro = {
+        enable = true
+      }
+    }
+  },
   lua_ls = {
     settings = {
       Lua = {

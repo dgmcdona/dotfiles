@@ -5,6 +5,26 @@
 return {
   -- terminals
   {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    ---@type Flash.Config
+    opts = {
+      modes = {
+        search = {
+          enabled = true
+        }
+      }
+    },
+    -- stylua: ignore
+    keys = {
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    }
+  },
+  {
     'akinsho/toggleterm.nvim',
     version = "*",
     config = function()
@@ -27,6 +47,11 @@ return {
     },
   },
 
+  --text alignment
+  {
+    "godlygeek/tabular"
+  },
+
   -- neotree
   {
     "nvim-neo-tree/neo-tree.nvim",
@@ -36,31 +61,39 @@ return {
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
     },
-    init = function()
-      vim.keymap.set('n', '<leader>tt', function()
-          local reveal_file = vim.fn.expand('%:p')
-          if (reveal_file == '') then
-            reveal_file = vim.fn.getcwd()
-          else
-            local f = io.open(reveal_file, "r")
-            if (f) then
-              f.close(f)
-            else
+    config = function()
+      require('neo-tree').setup({
+        use_libuv_file_watcher = true
+      })
+    end,
+    keys = {
+      {
+        "<leader>tt",
+        function()
+            local reveal_file = vim.fn.expand('%:p')
+            if (reveal_file == '') then
               reveal_file = vim.fn.getcwd()
+            else
+              local f = io.open(reveal_file, "r")
+              if (f) then
+                f.close(f)
+              else
+                reveal_file = vim.fn.getcwd()
+              end
             end
-          end
-          require('neo-tree.command').execute({
-            action = "focus",          -- OPTIONAL, this is the default value
-            source = "filesystem",     -- OPTIONAL, this is the default value
-            position = "left",         -- OPTIONAL, this is the default value
-            toggle = true,
-            reveal_file = reveal_file, -- path to file or folder to reveal
-            reveal_force_cwd = true,   -- change cwd without asking if needed
-          })
-        end,
-        { desc = "[T]oggle [T]ree" }
-      );
-    end
+            require('neo-tree.command').execute({
+              action = "focus",          -- OPTIONAL, this is the default value
+              source = "filesystem",     -- OPTIONAL, this is the default value
+              position = "left",         -- OPTIONAL, this is the default value
+              toggle = true,
+              reveal_file = reveal_file, -- path to file or folder to reveal
+              reveal_force_cwd = true,   -- change cwd without asking if needed
+            })
+          end,
+        mode = "",
+        desc = "[T]oggle Neo[T]ree"
+      }
+    },
   },
   -- UI enhancements
   { "stevearc/dressing.nvim" },
@@ -75,7 +108,7 @@ return {
         -- Customize or remove this keymap to your liking
         "<leader>f",
         function()
-          require("conform").format({ async = true, lsp_fallback = true })
+          require('conform').format { async = true, lsp_format = 'fallback' }
         end,
         mode = "",
         desc = "Format buffer",
@@ -91,8 +124,7 @@ return {
         go = { "gofumpt" },
         sh = { "shfmt" }
       },
-      -- Set up format-on-save
-      -- format_on_save = { timeout_ms = 500, lsp_fallback = true },
+
       -- Customize formatters
       formatters = {
         shfmt = {
@@ -134,4 +166,34 @@ return {
       end
     end
   },
+  {
+    'folke/trouble.nvim',
+    keys = {
+      {
+        "<leader>td",
+        function()
+        end,
+        mode = "",
+        desc = "[T]oggle [D]iagnostics"
+      }
+    }
+  },
+  {
+    "hedyhli/outline.nvim",
+    lazy = true,
+    cmd = { "Outline", "OutlineOpen" },
+    keys = { -- Example mapping to toggle outline
+      { "<leader>o", "<cmd>Outline<CR>", desc = "Toggle outline" },
+    },
+    opts = {
+      -- Your setup opts here
+    },
+  },
+  {
+  'stevearc/oil.nvim',
+  opts = {},
+  -- Optional dependencies
+  dependencies = { { "echasnovski/mini.icons", opts = {} } },
+  -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
+  }
 }
