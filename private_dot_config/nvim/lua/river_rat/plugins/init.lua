@@ -14,9 +14,9 @@ return {
     opts = {
       modes = {
         search = {
-          enabled = true
-        }
-      }
+          enabled = true,
+        },
+      },
     },
     -- stylua: ignore
     keys = {
@@ -26,19 +26,20 @@ return {
       { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
       { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     }
+,
   },
   {
-    'akinsho/toggleterm.nvim',
+    "akinsho/toggleterm.nvim",
     version = "*",
     config = function()
-      require('toggleterm').setup({
-        open_mapping = '<C-t>',
-        direction = 'float',
+      require("toggleterm").setup({
+        open_mapping = "<C-t>",
+        direction = "float",
         float_opts = {
-          border = 'curved',
+          border = "curved",
         },
       })
-    end
+    end,
   },
 
   -- git
@@ -52,7 +53,7 @@ return {
 
   --text alignment
   {
-    "godlygeek/tabular"
+    "godlygeek/tabular",
   },
 
   -- neotree
@@ -65,37 +66,37 @@ return {
       "MunifTanjim/nui.nvim",
     },
     config = function()
-      require('neo-tree').setup({
-        use_libuv_file_watcher = true
+      require("neo-tree").setup({
+        use_libuv_file_watcher = true,
       })
     end,
     keys = {
       {
         "<leader>tt",
         function()
-            local reveal_file = vim.fn.expand('%:p')
-            if (reveal_file == '') then
-              reveal_file = vim.fn.getcwd()
+          local reveal_file = vim.fn.expand("%:p")
+          if reveal_file == "" then
+            reveal_file = vim.fn.getcwd()
+          else
+            local f = io.open(reveal_file, "r")
+            if f then
+              f.close(f)
             else
-              local f = io.open(reveal_file, "r")
-              if (f) then
-                f.close(f)
-              else
-                reveal_file = vim.fn.getcwd()
-              end
+              reveal_file = vim.fn.getcwd()
             end
-            require('neo-tree.command').execute({
-              action = "focus",          -- OPTIONAL, this is the default value
-              source = "filesystem",     -- OPTIONAL, this is the default value
-              position = "left",         -- OPTIONAL, this is the default value
-              toggle = true,
-              reveal_file = reveal_file, -- path to file or folder to reveal
-              reveal_force_cwd = true,   -- change cwd without asking if needed
-            })
-          end,
+          end
+          require("neo-tree.command").execute({
+            action = "focus", -- OPTIONAL, this is the default value
+            source = "filesystem", -- OPTIONAL, this is the default value
+            position = "left", -- OPTIONAL, this is the default value
+            toggle = true,
+            reveal_file = reveal_file, -- path to file or folder to reveal
+            reveal_force_cwd = true, -- change cwd without asking if needed
+          })
+        end,
         mode = "",
-        desc = "[T]oggle Neo[T]ree"
-      }
+        desc = "[T]oggle Neo[T]ree",
+      },
     },
   },
   -- UI enhancements
@@ -111,10 +112,10 @@ return {
         -- Customize or remove this keymap to your liking
         "<leader>f",
         function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
+          require("conform").format({ async = true, lsp_format = "fallback" })
         end,
         mode = "",
-        desc = "Format buffer",
+        desc = "[F]ormat buffer",
       },
     },
     -- Everything in opts will be passed to setup()
@@ -125,8 +126,9 @@ return {
         python = { "isort", "black" },
         javascript = { { "prettierd", "prettier" } },
         go = { "gofumpt" },
-        sh = { "shfmt" }
+        sh = { "shfmt" },
       },
+      notify_on_error = true,
 
       -- Customize formatters
       formatters = {
@@ -158,16 +160,16 @@ return {
   },
 
   {
-    'chipsenkbeil/distant.nvim',
-    branch = 'v0.3',
+    "chipsenkbeil/distant.nvim",
+    branch = "v0.3",
     config = function()
-      local ok, servers = pcall(require, 'river_rat.extras.lang_servers.distant')
+      local ok, servers = pcall(require, "river_rat.extras.lang_servers.distant")
       if ok then
-        require('distant'):setup(servers)
+        require("distant"):setup(servers)
       else
-        require('distant'):setup()
+        require("distant"):setup()
       end
-    end
+    end,
   },
   {
     "folke/trouble.nvim",
@@ -204,7 +206,7 @@ return {
         "<cmd>Trouble qflist toggle<cr>",
         desc = "Quickfix List (Trouble)",
       },
-   },
+    },
   },
   {
     "hedyhli/outline.nvim",
@@ -218,10 +220,10 @@ return {
     },
   },
   {
-  'stevearc/oil.nvim',
-  opts = {},
-  -- Optional dependencies
-  dependencies = { { "echasnovski/mini.icons", opts = {} } },
-  -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
-  }
+    "stevearc/oil.nvim",
+    opts = {},
+    -- Optional dependencies
+    dependencies = { { "echasnovski/mini.icons", opts = {} } },
+    -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
+  },
 }

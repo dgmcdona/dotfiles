@@ -20,7 +20,7 @@ return {
       },
     },
   },
-  pyright = require("river_rat.extras.lang_servers.pyright"),
+  basedpyright = require("river_rat.extras.lang_servers.pyright"),
   rust_analyzer = {
     settings = {
       cargo = {
