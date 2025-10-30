@@ -30,7 +30,7 @@ return {
         -- See the configuration section for more details
         -- Load luvit types when the `vim.uv` word is found
         { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-        { path = 'wezterm-types', mods = { 'wezterm' } },
+        { path = "wezterm-types", mods = { "wezterm" } },
       },
     },
   },
@@ -116,7 +116,10 @@ return {
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
       --    function will be executed to configure the current buffer
       vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
+        group = vim.api.nvim_create_augroup(
+          "kickstart-lsp-attach",
+          { clear = true }
+        ),
         callback = function(event)
           -- NOTE: Remember that Lua is a real programming language, and as such it is possible
           -- to define small helper and utility functions so you don't have to repeat yourself.
@@ -125,7 +128,12 @@ return {
           -- for LSP related items. It sets the mode, buffer and description for us each time.
           local map = function(keys, func, desc, mode)
             mode = mode or "n"
-            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
+            vim.keymap.set(
+              mode,
+              keys,
+              func,
+              { buffer = event.buf, desc = "LSP: " .. desc }
+            )
           end
 
           -- Rename the variable under your cursor.
@@ -134,19 +142,36 @@ return {
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map("gra", vim.lsp.buf.code_action, "[G]oto Code [A]ction", { "n", "x" })
+          map(
+            "gra",
+            vim.lsp.buf.code_action,
+            "[G]oto Code [A]ction",
+            { "n", "x" }
+          )
 
           -- Find references for the word under your cursor.
-          map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
+          map(
+            "grr",
+            require("telescope.builtin").lsp_references,
+            "[G]oto [R]eferences"
+          )
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
-          map("gri", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
+          map(
+            "gri",
+            require("telescope.builtin").lsp_implementations,
+            "[G]oto [I]mplementation"
+          )
 
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map("grd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+          map(
+            "grd",
+            require("telescope.builtin").lsp_definitions,
+            "[G]oto [D]efinition"
+          )
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -154,16 +179,28 @@ return {
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
-          map("gO", require("telescope.builtin").lsp_document_symbols, "Open Document Symbols")
+          map(
+            "gO",
+            require("telescope.builtin").lsp_document_symbols,
+            "Open Document Symbols"
+          )
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
-          map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
+          map(
+            "gW",
+            require("telescope.builtin").lsp_dynamic_workspace_symbols,
+            "Open Workspace Symbols"
+          )
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
-          map("grt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype Definition")
+          map(
+            "grt",
+            require("telescope.builtin").lsp_type_definitions,
+            "[G]oto [T]ype Definition"
+          )
 
           -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
           ---@param client vim.lsp.Client
@@ -192,8 +229,10 @@ return {
               event.buf
             )
           then
-            local highlight_augroup =
-              vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
+            local highlight_augroup = vim.api.nvim_create_augroup(
+              "kickstart-lsp-highlight",
+              { clear = false }
+            )
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
               buffer = event.buf,
               group = highlight_augroup,
@@ -207,10 +246,16 @@ return {
             })
 
             vim.api.nvim_create_autocmd("LspDetach", {
-              group = vim.api.nvim_create_augroup("kickstart-lsp-detach", { clear = true }),
+              group = vim.api.nvim_create_augroup(
+                "kickstart-lsp-detach",
+                { clear = true }
+              ),
               callback = function(event2)
                 vim.lsp.buf.clear_references()
-                vim.api.nvim_clear_autocmds({ group = "kickstart-lsp-highlight", buffer = event2.buf })
+                vim.api.nvim_clear_autocmds({
+                  group = "kickstart-lsp-highlight",
+                  buffer = event2.buf,
+                })
               end,
             })
           end
@@ -221,10 +266,16 @@ return {
           -- This may be unwanted, since they displace some of your code
           if
             client
-            and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf)
+            and client_supports_method(
+              client,
+              vim.lsp.protocol.Methods.textDocument_inlayHint,
+              event.buf
+            )
           then
             map("<leader>th", function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
+              vim.lsp.inlay_hint.enable(
+                not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf })
+              )
             end, "[T]oggle Inlay [H]ints")
           end
         end,
@@ -293,7 +344,9 @@ return {
       vim.list_extend(ensure_installed, {
         "stylua", -- Used to format Lua code
       })
-      require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+      require("mason-tool-installer").setup({
+        ensure_installed = ensure_installed,
+      })
 
       require("mason-lspconfig").setup({
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
@@ -304,7 +357,12 @@ return {
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+            server.capabilities = vim.tbl_deep_extend(
+              "force",
+              {},
+              capabilities,
+              server.capabilities or {}
+            )
             require("lspconfig")[server_name].setup(server)
           end,
         },
@@ -391,7 +449,10 @@ return {
       sources = {
         default = { "lsp", "path", "snippets", "lazydev" },
         providers = {
-          lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
+          lazydev = {
+            module = "lazydev.integrations.blink",
+            score_offset = 100,
+          },
         },
       },
 
@@ -504,7 +565,11 @@ return {
             gs.prev_hunk()
           end)
           return "<Ignore>"
-        end, { expr = true, buffer = bufnr, desc = "Jump to previous hunk" })
+        end, {
+          expr = true,
+          buffer = bufnr,
+          desc = "Jump to previous hunk",
+        })
       end,
     },
   },
@@ -623,23 +688,75 @@ return {
 
       local builtin = require("telescope.builtin")
 
-      vim.keymap.set("n", "<leader>?", builtin.oldfiles, { desc = "[?] Search recently opened files" })
-      vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Search open buffers" })
+      vim.keymap.set(
+        "n",
+        "<leader>?",
+        builtin.oldfiles,
+        { desc = "[?] Search recently opened files" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader><leader>",
+        builtin.buffers,
+        { desc = "[ ] Search open buffers" }
+      )
       vim.keymap.set("n", "<leader>/", function()
         -- You can pass additional configuration to telescope to change theme, layout, etc.
-        require("telescope.builtin").current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-          winblend = 10,
-          previewer = false,
-        }))
+        require("telescope.builtin").current_buffer_fuzzy_find(
+          require("telescope.themes").get_dropdown({
+            winblend = 10,
+            previewer = false,
+          })
+        )
       end, { desc = "[/] Fuzzy search current buffer" })
-      vim.keymap.set("n", "<leader>sv", builtin.git_files, { desc = "[S]earch [V]ersion Control [F]iles" })
-      vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
-      vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
-      vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
-      vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch with [G]rep" })
-      vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
-      vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
-      vim.keymap.set("n", "<leader>su", require("telescope").extensions.undo.undo, { desc = "[S]earch [U]ndo" })
+      vim.keymap.set(
+        "n",
+        "<leader>sv",
+        builtin.git_files,
+        { desc = "[S]earch [V]ersion Control [F]iles" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>sf",
+        builtin.find_files,
+        { desc = "[S]earch [F]iles" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>sh",
+        builtin.help_tags,
+        { desc = "[S]earch [H]elp" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>sw",
+        builtin.grep_string,
+        { desc = "[S]earch current [W]ord" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>sg",
+        builtin.live_grep,
+        { desc = "[S]earch with [G]rep" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>sd",
+        builtin.diagnostics,
+        { desc = "[S]earch [D]iagnostics" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>sr",
+        builtin.resume,
+        { desc = "[S]earch [R]esume" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>su",
+        require("telescope").extensions.undo.undo,
+        { desc = "[S]earch [U]ndo" }
+      )
       vim.keymap.set(
         "n",
         "<leader>sp",
