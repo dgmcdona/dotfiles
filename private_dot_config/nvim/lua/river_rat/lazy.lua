@@ -6,7 +6,7 @@ return {
   "tpope/vim-rhubarb",
   "shumphrey/fugitive-gitlab.vim",
 
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  "NMAC427/guess-indent.nvim", -- Detect tabstop and shiftwidth automatically
 
   -- Restore cursor position on reopen
   {
@@ -18,11 +18,19 @@ return {
   {
     "folke/lazydev.nvim",
     ft = "lua", -- only load on lua files
+    dependencies = {
+      {
+        "DrKJeff16/wezterm-types",
+        lazy = true,
+        version = false, -- Get the latest version
+      },
+    },
     opts = {
       library = {
         -- See the configuration section for more details
         -- Load luvit types when the `vim.uv` word is found
         { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+        { path = 'wezterm-types', mods = { 'wezterm' } },
       },
     },
   },
@@ -178,9 +186,14 @@ return {
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           if
             client
-            and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf)
+            and client_supports_method(
+              client,
+              vim.lsp.protocol.Methods.textDocument_documentHighlight,
+              event.buf
+            )
           then
-            local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
+            local highlight_augroup =
+              vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
               buffer = event.buf,
               group = highlight_augroup,
@@ -206,7 +219,10 @@ return {
           -- code, if the language server you are using supports them
           --
           -- This may be unwanted, since they displace some of your code
-          if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+          if
+            client
+            and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf)
+          then
             map("<leader>th", function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
             end, "[T]oggle Inlay [H]ints")
@@ -624,7 +640,12 @@ return {
       vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
       vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
       vim.keymap.set("n", "<leader>su", require("telescope").extensions.undo.undo, { desc = "[S]earch [U]ndo" })
-      vim.keymap.set("n", "<leader>sp", require("telescope").extensions.ghq.ghq, { desc = "[S]earch Re[p]ositories" })
+      vim.keymap.set(
+        "n",
+        "<leader>sp",
+        require("telescope").extensions.ghq.ghq,
+        { desc = "[S]earch Re[p]ositories" }
+      )
     end,
   },
   {
